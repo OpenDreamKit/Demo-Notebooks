@@ -1,0 +1,5 @@
+sagemath
+sagemath-jupyter
+pari-gp
+gap
+singular
