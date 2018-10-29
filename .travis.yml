@@ -1,0 +1,14 @@
+language: python
+python: "3.6"
+install:
+  - pip install git+https://github.com/OpenDreamKit/planetaryum.git
+script:
+  - planetaryum static title="Demo notebooks – 2nd project review" baseurl="https://github.com/OpenDreamKit/Demo-Notebooks/raw/master/%" binderurl="https://mybinder.org/v2/gh/OpenDreamKit/Demo-Notebooks/master?filepath=%"
+deploy:
+  provider: pages
+  local-dir: _site
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  on:
+branch: master
