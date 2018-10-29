@@ -1,0 +1,111 @@
+
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Coalescent-simulator">Coalescent simulator<a class="anchor-link" href="#Coalescent-simulator">&#182;</a></h1><p>by Marshall Hampton</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">next_gen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Creates the next generation from the previous; also returns parent-child indexing list&#39;&#39;&#39;</span>
+    <span class="n">next_x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">selection</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">rind</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rind</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">next_x</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">rind</span><span class="p">],</span><span class="n">rind</span><span class="p">))</span>
+    <span class="n">next_x</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">next_x</span><span class="p">],[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">next_x</span><span class="p">]]</span>
+
+<span class="k">def</span> <span class="nf">coal_plot</span><span class="p">(</span><span class="n">some_data</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Creates a graphics object from coalescent data&#39;&#39;&#39;</span>
+    <span class="n">gens</span> <span class="o">=</span> <span class="n">some_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">some_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">gen_lines</span> <span class="o">=</span> <span class="n">line</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">pts</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>
+    <span class="n">ngens</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gens</span><span class="p">)</span>
+    <span class="n">gen_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gens</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">gen_size</span><span class="p">):</span>
+        <span class="n">pts</span> <span class="o">+=</span> <span class="n">point</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">ngens</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">hue</span> <span class="o">=</span> <span class="n">gens</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">x</span><span class="p">]</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">gen_size</span><span class="o">*</span><span class="mf">1.1</span><span class="p">))</span>
+    <span class="n">p_frame</span> <span class="o">=</span> <span class="n">line</span><span class="p">([[</span><span class="o">-.</span><span class="mi">5</span><span class="p">,</span><span class="o">-.</span><span class="mi">5</span><span class="p">],[</span><span class="o">-.</span><span class="mi">5</span><span class="p">,</span><span class="n">ngens</span><span class="o">-.</span><span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="n">gen_size</span><span class="o">-.</span><span class="mi">5</span><span class="p">,</span><span class="n">ngens</span><span class="o">-.</span><span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="n">gen_size</span><span class="o">-.</span><span class="mi">5</span><span class="p">,</span><span class="o">-.</span><span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="o">-.</span><span class="mi">5</span><span class="p">,</span><span class="o">-.</span><span class="mi">5</span><span class="p">]])</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ngens</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">gen_size</span><span class="p">):</span>
+            <span class="n">old_x</span> <span class="o">=</span> <span class="n">inds</span><span class="p">[</span><span class="n">g</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">x</span><span class="p">]</span>
+            <span class="n">gen_lines</span> <span class="o">+=</span> <span class="n">line</span><span class="p">([[</span><span class="n">x</span><span class="p">,</span><span class="n">ngens</span><span class="o">-</span><span class="n">g</span><span class="o">-</span><span class="mi">1</span><span class="p">],[</span><span class="n">old_x</span><span class="p">,</span><span class="n">ngens</span><span class="o">-</span><span class="n">g</span><span class="p">]],</span> <span class="n">hue</span> <span class="o">=</span> <span class="n">gens</span><span class="p">[</span><span class="n">g</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">old_x</span><span class="p">]</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">gen_size</span><span class="o">*</span><span class="mf">1.1</span><span class="p">))</span>
+            <span class="n">pts</span> <span class="o">+=</span> <span class="n">point</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">ngens</span><span class="o">-</span><span class="n">g</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">hue</span> <span class="o">=</span> <span class="n">gens</span><span class="p">[</span><span class="n">g</span><span class="p">][</span><span class="n">x</span><span class="p">]</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">gen_size</span><span class="o">*</span><span class="mf">1.1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pts</span><span class="o">+</span><span class="n">gen_lines</span><span class="o">+</span><span class="n">p_frame</span>
+<span class="n">d_field</span> <span class="o">=</span> <span class="n">RealField</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="nd">@interact</span>
+<span class="k">def</span> <span class="nf">coalescents</span><span class="p">(</span><span class="n">pop_size</span> <span class="o">=</span> <span class="n">slider</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="s1">&#39;Population size&#39;</span><span class="p">),</span> <span class="n">selection</span> <span class="o">=</span> <span class="n">slider</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Selection for first taxon&#39;</span><span class="p">),</span> <span class="n">s</span> <span class="o">=</span> <span class="n">selector</span><span class="p">([</span><span class="s1">&#39;Again!&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Refresh&#39;</span><span class="p">,</span> <span class="n">buttons</span><span class="o">=</span><span class="bp">True</span><span class="p">)):</span>
+    <span class="k">print</span> <span class="s1">&#39;Population size: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pop_size</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s1">&#39;Selection coefficient for first taxon: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">d_field</span><span class="p">(</span><span class="n">selection</span><span class="p">))</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop_size</span><span class="p">)]</span>
+    <span class="n">gens</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">gens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">gens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">g_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gens</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">n_gen</span> <span class="o">=</span> <span class="n">next_gen</span><span class="p">(</span><span class="n">gens</span><span class="p">[</span><span class="n">g_index</span><span class="p">],</span> <span class="n">selection</span> <span class="o">=</span> <span class="n">selection</span><span class="p">)</span>
+        <span class="n">gens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_gen</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">inds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_gen</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">coal_data1</span> <span class="o">=</span> <span class="p">[</span><span class="n">gens</span><span class="p">,</span><span class="n">inds</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Generations until coalescence: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gens</span><span class="p">)))</span>
+    <span class="n">show</span><span class="p">(</span><span class="n">coal_plot</span><span class="p">(</span><span class="n">coal_data1</span><span class="p">),</span> <span class="n">axes</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mf">4.0</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">gens</span><span class="p">)</span><span class="o">/</span><span class="n">pop_size</span><span class="p">],</span> <span class="n">ymax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gens</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+ 
+ 
+<div id="1ef8bf56-af84-4cf5-b4aa-d2bdc68ee197"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#1ef8bf56-af84-4cf5-b4aa-d2bdc68ee197');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "ee1b6821f9564e1680ac33c14592c494", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+ 
+

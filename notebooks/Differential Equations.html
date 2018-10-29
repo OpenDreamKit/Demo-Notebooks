@@ -1,0 +1,432 @@
+
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Vector-Fields-and-Euler's-Method">Vector Fields and Euler's Method<a class="anchor-link" href="#Vector-Fields-and-Euler's-Method">&#182;</a></h1><p>by Mike Hansen (tested and updated by William Stein, and later by Dan Drake)</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;x,y&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">sage.ext.fast_eval</span> <span class="kn">import</span> <span class="n">fast_float</span>
+<span class="nd">@interact</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="n">f</span> <span class="o">=</span> <span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">y</span><span class="p">),</span> <span class="n">g</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=-</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="o">+</span><span class="n">x</span><span class="o">^</span><span class="mi">3</span><span class="o">-</span><span class="n">x</span><span class="p">),</span>
+      <span class="n">xmin</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">xmax</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+      <span class="n">ymin</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">ymax</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+      <span class="n">start_x</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">start_y</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+      <span class="n">step_size</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)),</span> <span class="n">steps</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">))</span> <span class="p">):</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">fast_float</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="n">gg</span> <span class="o">=</span> <span class="n">fast_float</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">start_x</span><span class="p">,</span> <span class="n">start_y</span><span class="p">)</span> <span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">xx</span> <span class="o">+</span> <span class="n">step_size</span> <span class="o">*</span> <span class="n">ff</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">),</span> <span class="n">yy</span> <span class="o">+</span> <span class="n">step_size</span> <span class="o">*</span> <span class="n">gg</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">))</span> <span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">ArithmeticError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">break</span>
+
+    <span class="n">starting_point</span> <span class="o">=</span> <span class="n">point</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pointsize</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">solution</span> <span class="o">=</span> <span class="n">line</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">vector_field</span> <span class="o">=</span> <span class="n">plot_vector_field</span><span class="p">(</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">vector_field</span> <span class="o">+</span> <span class="n">starting_point</span> <span class="o">+</span> <span class="n">solution</span>
+
+    <span class="n">pretty_print</span><span class="p">(</span><span class="n">html</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\displaystyle\frac{dx}{dt} = </span><span class="si">%s</span><span class="s2">$  $ \displaystyle\frac{dy}{dt} = </span><span class="si">%s</span><span class="s2">$&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">latex</span><span class="p">(</span><span class="n">f</span><span class="p">),</span><span class="n">latex</span><span class="p">(</span><span class="n">g</span><span class="p">))))</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span><span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+ 
+ 
+<div id="c98b2373-8030-49ef-ad47-f1b00e5e0848"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#c98b2373-8030-49ef-ad47-f1b00e5e0848');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "80d7ba3bee494584a697ec194d78476d", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Vector-Field-with-Runga-Kutta-Fehlberg">Vector Field with Runga-Kutta-Fehlberg<a class="anchor-link" href="#Vector-Field-with-Runga-Kutta-Fehlberg">&#182;</a></h1><p>by Harald Schilly</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;x y&#39;</span><span class="p">)</span>
+<span class="nd">@interact</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="n">fin</span> <span class="o">=</span> <span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">y</span><span class="o">+</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="o">*</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">^</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">-</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="o">^</span><span class="mi">3</span><span class="p">),</span> <span class="n">gin</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">x</span><span class="o">^</span><span class="mi">3</span><span class="o">-</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="o">+</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mf">0.7</span><span class="o">*</span><span class="n">x</span><span class="p">),</span>
+      <span class="n">xmin</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">xmax</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">1.8</span><span class="p">),</span>
+      <span class="n">ymin</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=-</span><span class="mf">1.3</span><span class="p">),</span> <span class="n">ymax</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span>
+      <span class="n">x_start</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">)),</span> <span class="n">y_start</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">)),</span> <span class="n">error</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)),</span>
+      <span class="n">t_length</span><span class="o">=</span><span class="p">(</span><span class="mi">23</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span> <span class="p">,</span> <span class="n">num_of_points</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1500</span><span class="p">,(</span><span class="mi">5</span><span class="p">,</span><span class="mi">2000</span><span class="p">)),</span>
+      <span class="n">algorithm</span> <span class="o">=</span> <span class="n">selector</span><span class="p">([</span>
+         <span class="p">(</span><span class="s2">&quot;rkf45&quot;</span> <span class="p">,</span> <span class="s2">&quot;runga-kutta-felhberg (4,5)&quot;</span><span class="p">),</span>
+         <span class="p">(</span><span class="s2">&quot;rk2&quot;</span> <span class="p">,</span> <span class="s2">&quot;embedded runga-kutta (2,3)&quot;</span><span class="p">),</span>
+         <span class="p">(</span><span class="s2">&quot;rk4&quot;</span> <span class="p">,</span> <span class="s2">&quot;4th order classical runga-kutta&quot;</span><span class="p">),</span>
+         <span class="p">(</span><span class="s2">&quot;rk8pd&quot;</span> <span class="p">,</span> <span class="s1">&#39;runga-kutta prince-dormand (8,9)&#39;</span><span class="p">),</span>
+         <span class="p">(</span><span class="s2">&quot;rk2imp&quot;</span> <span class="p">,</span> <span class="s2">&quot;implicit 2nd order runga-kutta at gaussian points&quot;</span><span class="p">),</span>
+         <span class="p">(</span><span class="s2">&quot;rk4imp&quot;</span> <span class="p">,</span> <span class="s2">&quot;implicit 4th order runga-kutta at gaussian points&quot;</span><span class="p">),</span>
+         <span class="p">(</span><span class="s2">&quot;bsimp&quot;</span> <span class="p">,</span> <span class="s2">&quot;implicit burlisch-stoer (requires jacobian)&quot;</span><span class="p">),</span>
+         <span class="p">(</span><span class="s2">&quot;gear1&quot;</span> <span class="p">,</span> <span class="s2">&quot;M=1 implicit gear&quot;</span><span class="p">),</span>
+         <span class="p">(</span><span class="s2">&quot;gear2&quot;</span> <span class="p">,</span> <span class="s2">&quot;M=2 implicit gear&quot;</span><span class="p">)</span>
+      <span class="p">])):</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="o">=</span><span class="n">fin</span>
+    <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="o">=</span><span class="n">gin</span>
+
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">_fast_float_</span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="o">.</span><span class="n">args</span><span class="p">())</span>
+    <span class="n">gg</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">_fast_float_</span><span class="p">(</span><span class="o">*</span><span class="n">g</span><span class="o">.</span><span class="n">args</span><span class="p">())</span>
+
+    <span class="c1">#solve</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">error</span>
+    <span class="n">xerr</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">yerr</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="n">err</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">+</span><span class="n">err</span><span class="p">]:</span>
+      <span class="n">T</span><span class="o">=</span><span class="n">ode_solver</span><span class="p">()</span>
+      <span class="n">T</span><span class="o">.</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span>
+      <span class="n">T</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">yp</span><span class="p">:</span> <span class="p">[</span><span class="n">ff</span><span class="p">(</span><span class="n">yp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">yp</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">gg</span><span class="p">(</span><span class="n">yp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">yp</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+      <span class="n">T</span><span class="o">.</span><span class="n">jacobian</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">yp</span><span class="p">:</span> <span class="p">[[</span><span class="n">diff</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span><span class="n">dval</span><span class="p">)(</span><span class="n">yp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">yp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">dval</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]]</span> <span class="k">for</span> <span class="n">fun</span> <span class="ow">in</span> <span class="p">[</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">]]</span>
+      <span class="n">T</span><span class="o">.</span><span class="n">ode_solve</span><span class="p">(</span><span class="n">y_0</span><span class="o">=</span><span class="p">[</span><span class="n">x_start</span> <span class="o">+</span> <span class="n">xerr</span><span class="p">,</span> <span class="n">y_start</span> <span class="o">+</span> <span class="n">yerr</span><span class="p">],</span><span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">t_length</span><span class="p">],</span><span class="n">num_points</span><span class="o">=</span><span class="n">num_of_points</span><span class="p">)</span>
+      <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">T</span><span class="o">.</span><span class="n">solution</span><span class="p">]))</span>
+
+    <span class="c1">#plot</span>
+    <span class="n">vector_field</span> <span class="o">=</span> <span class="n">plot_vector_field</span><span class="p">(</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">starting_point</span> <span class="o">=</span> <span class="n">point</span><span class="p">([</span><span class="n">x_start</span><span class="p">,</span> <span class="n">y_start</span><span class="p">],</span> <span class="n">pointsize</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">show</span><span class="p">(</span><span class="n">vector_field</span> <span class="o">+</span> <span class="n">starting_point</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">aspect_ratio</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+ 
+ 
+<div id="8e031642-9524-42e6-9a9a-b465338e4db2"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#8e031642-9524-42e6-9a9a-b465338e4db2');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "8f9f8a80b9c54fb89f1469801d909124", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Euler-Maruyama-method-and-geometric-Brownian-motion-(a-common-simple-model-of-the-stock-market)">Euler-Maruyama method and geometric Brownian motion (a common simple model of the stock market)<a class="anchor-link" href="#Euler-Maruyama-method-and-geometric-Brownian-motion-(a-common-simple-model-of-the-stock-market)">&#182;</a></h1><p>by Marshall Hampton</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">EulerMaruyama</span><span class="p">(</span><span class="n">xstart</span><span class="p">,</span> <span class="n">ystart</span><span class="p">,</span> <span class="n">xfinish</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">):</span> 
+    <span class="n">sol</span> <span class="o">=</span> <span class="p">[</span><span class="n">ystart</span><span class="p">]</span> 
+    <span class="n">xvals</span> <span class="o">=</span> <span class="p">[</span><span class="n">xstart</span><span class="p">]</span> 
+    <span class="n">h</span> <span class="o">=</span> <span class="n">N</span><span class="p">((</span><span class="n">xfinish</span><span class="o">-</span><span class="n">xstart</span><span class="p">)</span><span class="o">/</span><span class="n">nsteps</span><span class="p">)</span> 
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsteps</span><span class="p">):</span> 
+        <span class="n">sol</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span><span class="o">*</span><span class="n">f1</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">h</span><span class="o">^</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">*</span><span class="n">f2</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">normalvariate</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> 
+        <span class="n">xvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xvals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span> 
+    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span><span class="n">sol</span><span class="p">)</span>
+    
+<span class="n">out</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>
+<span class="n">save</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="s1">&#39;temp&#39;</span><span class="p">)</span>
+<span class="nd">@interact</span>
+<span class="k">def</span> <span class="nf">EulerMaruyamaExample</span><span class="p">(</span><span class="n">mu</span> <span class="o">=</span> <span class="n">slider</span><span class="p">(</span><span class="n">srange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="o">.</span><span class="mi">1</span><span class="p">),</span><span class="n">default</span><span class="o">=</span><span class="mf">2.0</span><span class="p">),</span>
+                        <span class="n">sigma</span> <span class="o">=</span> <span class="n">slider</span><span class="p">(</span><span class="n">srange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="o">.</span><span class="mi">1</span><span class="p">),</span><span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+                        <span class="n">plots_at_a_time</span> <span class="o">=</span> <span class="n">slider</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span> 
+                        <span class="n">number_of_steps</span> <span class="o">=</span> <span class="n">slider</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">),</span><span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> 
+                        <span class="n">clear_plot</span> <span class="o">=</span> <span class="n">checkbox</span><span class="p">(</span><span class="bp">True</span><span class="p">),</span> 
+                        <span class="n">auto_update</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">html</span><span class="p">(</span><span class="s1">&#39;&lt;center&gt;Example of the Euler-Maruyama method applied to&lt;br&gt;the stochastic differential equation for geometric Brownian motion&lt;/center&gt;&#39;</span><span class="p">)</span>
+    <span class="n">html</span><span class="p">(</span><span class="s1">&#39;&lt;center&gt;$S = S_0 + \int_0^t \mu S dt + \int_0^t \sigma S dW$&lt;/center&gt;&#39;</span><span class="p">)</span>
+    <span class="n">emplot</span> <span class="o">=</span> <span class="n">list_plot</span><span class="p">(</span><span class="n">EulerMaruyama</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">number_of_steps</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">mu</span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">sigma</span><span class="o">*</span><span class="n">x</span><span class="p">),</span><span class="n">plotjoined</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">plots_at_a_time</span><span class="p">):</span>
+        <span class="n">emplot</span> <span class="o">=</span> <span class="n">emplot</span> <span class="o">+</span> <span class="n">list_plot</span><span class="p">(</span><span class="n">EulerMaruyama</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">mu</span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">sigma</span><span class="o">*</span><span class="n">x</span><span class="p">),</span><span class="n">plotjoined</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">clear_plot</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">emplot</span>
+        <span class="n">save</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="s1">&#39;temp&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;temp&#39;</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">+</span> <span class="n">emplot</span>
+        <span class="n">save</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="s1">&#39;temp&#39;</span><span class="p">)</span>
+    <span class="n">show</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+ 
+ 
+<div id="14a1c75d-bad4-4275-a63f-36d8a0f0534d"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#14a1c75d-bad4-4275-a63f-36d8a0f0534d');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "f7fcc33e99784e4b9cafbfa1896bd892", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Autonomous-equations-and-stable/unstable-fixed-points">Autonomous equations and stable/unstable fixed points<a class="anchor-link" href="#Autonomous-equations-and-stable/unstable-fixed-points">&#182;</a></h1><p>by Marshall Hampton</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="o">%%</span><span class="n">cython</span>
+<span class="k">def</span> <span class="nf">RK4_1d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">double</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">double</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">double</span> <span class="n">t_end</span><span class="p">,</span> <span class="nb">int</span> <span class="n">steps</span><span class="p">,</span> <span class="n">double</span> <span class="n">y_upper</span> <span class="o">=</span> <span class="mf">10</span><span class="o">**</span><span class="mf">6</span><span class="p">,</span> <span class="n">double</span> <span class="n">y_lower</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10</span><span class="o">**</span><span class="mf">6</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Fourth-order scalar Runge-Kutta solver with fixed time steps. f must be a function of t,y, </span>
+<span class="sd">    where y is just a scalar variable.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">step_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">t_start</span><span class="p">)</span><span class="o">/</span><span class="n">steps</span>
+    <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">t_current</span> <span class="o">=</span> <span class="n">t_start</span>
+    <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">y_current</span> <span class="o">=</span> <span class="n">y_start</span>
+    <span class="k">cdef</span> <span class="kt">list</span> <span class="nf">answer_table</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">j</span>
+    <span class="n">answer_table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">t_current</span><span class="p">,</span><span class="n">y_current</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="n">steps</span><span class="p">):</span>
+        <span class="n">k1</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">t_current</span><span class="p">,</span> <span class="n">y_current</span><span class="p">)</span>
+        <span class="n">k2</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">t_current</span><span class="o">+</span><span class="n">step_size</span><span class="o">/</span><span class="mf">2</span><span class="p">,</span> <span class="n">y_current</span> <span class="o">+</span> <span class="n">k1</span><span class="o">*</span><span class="n">step_size</span><span class="o">/</span><span class="mf">2</span><span class="p">)</span>
+        <span class="n">k3</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">t_current</span><span class="o">+</span><span class="n">step_size</span><span class="o">/</span><span class="mf">2</span><span class="p">,</span> <span class="n">y_current</span> <span class="o">+</span> <span class="n">k2</span><span class="o">*</span><span class="n">step_size</span><span class="o">/</span><span class="mf">2</span><span class="p">)</span>
+        <span class="n">k4</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">t_current</span><span class="o">+</span><span class="n">step_size</span><span class="p">,</span> <span class="n">y_current</span> <span class="o">+</span> <span class="n">k3</span><span class="o">*</span><span class="n">step_size</span><span class="p">)</span>
+        <span class="n">t_current</span> <span class="o">+=</span> <span class="n">step_size</span>
+        <span class="n">y_current</span> <span class="o">=</span> <span class="n">y_current</span> <span class="o">+</span> <span class="p">(</span><span class="n">step_size</span><span class="o">/</span><span class="mf">6</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">k1</span><span class="o">+</span><span class="mf">2</span><span class="o">*</span><span class="n">k2</span><span class="o">+</span><span class="mf">2</span><span class="o">*</span><span class="n">k3</span><span class="o">+</span><span class="n">k4</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y_current</span> <span class="o">&gt;</span> <span class="n">y_upper</span> <span class="ow">or</span> <span class="n">y_current</span> <span class="o">&lt;</span> <span class="n">y_lower</span><span class="p">:</span> 
+            <span class="n">j</span> <span class="o">=</span> <span class="n">steps</span>
+        <span class="n">answer_table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">t_current</span><span class="p">,</span><span class="n">y_current</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">answer_table</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">sage.rings.polynomial.real_roots</span> <span class="kn">import</span> <span class="n">real_roots</span>
+<span class="n">var</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="nd">@interact</span>
+<span class="k">def</span> <span class="nf">autonomous_plot</span><span class="p">(</span><span class="n">poly</span><span class="o">=</span><span class="n">input_box</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;polynomial&#39;</span><span class="p">),</span> <span class="n">t_end</span> <span class="o">=</span> <span class="n">slider</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="n">step_size</span> <span class="o">=</span> <span class="o">.</span><span class="mi">1</span><span class="p">)):</span> 
+    <span class="n">var</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>   
+    <span class="n">y</span> <span class="o">=</span> <span class="n">polygen</span><span class="p">(</span><span class="n">ZZ</span><span class="p">)</span>
+    <span class="n">ypoly</span> <span class="o">=</span> <span class="n">sage_eval</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">),</span><span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+    <span class="n">rr</span> <span class="o">=</span> <span class="n">real_roots</span><span class="p">(</span><span class="n">ypoly</span><span class="p">,</span> <span class="n">max_diameter</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">delvals</span> <span class="o">=</span> <span class="o">.</span><span class="mo">04</span>
+    <span class="n">minr</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rr</span><span class="p">])</span>
+    <span class="n">maxr</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rr</span><span class="p">])</span>
+    <span class="n">svals</span> <span class="o">=</span> <span class="p">[(</span><span class="n">minr</span><span class="o">-</span><span class="n">eps</span><span class="p">)</span><span class="o">*</span><span class="n">t</span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">maxr</span><span class="o">+</span><span class="n">eps</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">srange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">+</span><span class="n">delvals</span><span class="p">,</span><span class="n">delvals</span><span class="p">)]</span>
+    <span class="k">def</span> <span class="nf">polyf</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">xi</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">poly</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">xi</span><span class="p">)</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">RK4_1d</span><span class="p">(</span><span class="n">polyf</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">q</span><span class="p">,</span><span class="n">t_end</span><span class="p">,</span><span class="mf">100.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">svals</span><span class="p">]</span>    
+    <span class="n">miny</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">minr</span><span class="o">-</span><span class="n">eps</span><span class="p">,</span><span class="nb">min</span><span class="p">([</span><span class="nb">min</span><span class="p">([</span><span class="n">q1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">q1</span> <span class="ow">in</span> <span class="n">q</span><span class="p">])</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]))</span>
+    <span class="n">maxy</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">maxr</span><span class="o">+</span><span class="n">eps</span><span class="p">,</span><span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">([</span><span class="n">q1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">q1</span> <span class="ow">in</span> <span class="n">q</span><span class="p">])</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]))</span>
+    <span class="n">solpaths</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">line</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">])</span>
+    <span class="n">fixedpoints</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">line</span><span class="p">([[</span><span class="mi">0</span><span class="p">,(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">],[</span><span class="n">t_end</span><span class="p">,(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">]],</span> <span class="n">rgbcolor</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">rr</span><span class="p">])</span>
+    <span class="n">var</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+    <span class="n">html</span><span class="p">(</span><span class="s2">&quot;Autonomous differential equation $x&#39; = p(x)$&quot;</span><span class="p">)</span>
+    <span class="n">show</span><span class="p">(</span><span class="n">solpaths</span><span class="o">+</span><span class="n">fixedpoints</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">=</span> <span class="n">miny</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">maxy</span><span class="p">,</span> <span class="n">xmin</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+ 
+ 
+<div id="be183579-84a2-4c4b-89dd-8d066ca0841c"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#be183579-84a2-4c4b-89dd-8d066ca0841c');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "cd0435a2c6424b3fb67d49466b236c95", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Heat-equation-using-Fourier-series">Heat equation using Fourier series<a class="anchor-link" href="#Heat-equation-using-Fourier-series">&#182;</a></h1><p>by Pablo Angulo</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">x0</span>  <span class="o">=</span> <span class="mi">0</span>
+<span class="n">k</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">f</span>   <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">p</span>   <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">c</span>   <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">pi</span>
+<span class="n">orden</span><span class="o">=</span><span class="mi">10</span>
+<span class="n">alpha</span><span class="o">=</span><span class="p">[(</span><span class="n">n</span><span class="p">,</span><span class="n">c</span><span class="o">*</span><span class="n">numerical_integral</span><span class="p">(</span><span class="n">f</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">orden</span><span class="p">)]</span>
+
+<span class="nd">@interact</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.1</span><span class="o">*</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.</span><span class="o">.</span><span class="mi">10</span><span class="p">))</span> <span class="p">):</span>
+    <span class="n">ft</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span> <span class="n">a</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span><span class="o">*</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">a</span> <span class="ow">in</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="n">pt</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">ft</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">show</span><span class="p">(</span> <span class="n">p</span> <span class="o">+</span> <span class="n">pt</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">=</span> <span class="o">-.</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+ 
+ 
+<div id="3c84b8f9-2ac0-4b6f-83a0-c88e690fa5bd"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#3c84b8f9-2ac0-4b6f-83a0-c88e690fa5bd');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "d241f0a0b00d40afb6c8476efe7155cf", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+ 
+
